@@ -20,7 +20,7 @@ export type PlayerBySide = Record<PlayerSide, Fighter>;
 /**
  * Types of visual and gameplay effects during battle.
  */
-export type BattleEffectType = 'dodge' | 'shield' | 'claws' | string;
+export type BattleEffectType = 'dodge' | 'shield' | 'claws';
 
 /**
  * Battle effect targeting a specific arena side.

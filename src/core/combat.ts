@@ -1,5 +1,7 @@
-import type { Combatant } from '@/types/fighter';
 import { wait } from './utils';
+
+import type { BattleEffect,BattleState } from '@/types/battle';
+import type { Combatant } from '@/types/fighter';
 import type { Fighter } from '@/types/fighter';
 
 const battleImages = {
@@ -138,7 +140,7 @@ export function applyVictoryRewards(
 type RunLocalCombatArgs = {
   player: Fighter;
   opponent: Fighter;
-  onUpdate: (state: any) => void;
+  onUpdate: (state: Partial<BattleState>) => void;
   onLog: (message: string, type?: string) => void;
   checkSurrender?: () => boolean;
   onTurnComplete?: () => void;
@@ -158,7 +160,6 @@ export async function runLocalCombat({
     Combatant,
     Combatant,
   ];
-  let round = 1;
 
   onLog(`${left.name} enters the arena.`);
   await wait(700);
@@ -195,7 +196,6 @@ export async function runLocalCombat({
 
     if (left.hp > 0 && right.hp > 0 && !(checkSurrender && checkSurrender())) {
       await wait(250);
-      round += 1;
     }
   }
 
@@ -208,7 +208,7 @@ async function executeTurn(
   defender: Combatant,
   left: Combatant,
   right: Combatant,
-  onUpdate: (state: any) => void,
+  onUpdate: (state: Partial<BattleState>) => void,
   onLog: (message: string, type?: string) => void,
   checkSurrender?: () => boolean,
 ) {
@@ -245,7 +245,7 @@ async function executeTurn(
   if (checkSurrender?.()) return;
 
   // 2. Determinar si mostramos garras o escudo
-  let effectPayload = null;
+  let effectPayload: BattleEffect = null;
 
   if (result.didDodge) {
     effectPayload = {

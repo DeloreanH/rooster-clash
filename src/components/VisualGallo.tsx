@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+
 import type { VisualGalloProps } from '@/types/ui';
 
 export function VisualGallo({ type, color, isRight }: VisualGalloProps) {
@@ -37,13 +38,14 @@ export function VisualGallo({ type, color, isRight }: VisualGalloProps) {
           }
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.warn(
           'Fallo carga SVG. Asegúrate de servir desde un host local y que la ruta sea correcta.',
           e,
         );
       }
     };
-    loadSvg();
+    void loadSvg();
     return () => {
       isMounted = false;
     };

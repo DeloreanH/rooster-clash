@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
+
 import { FighterPanel } from './FighterPanel';
+
 import type { BattleArenaProps } from '@/types/ui';
 
 export function BattleArena({

@@ -1,4 +1,5 @@
 import { VisualGallo } from './VisualGallo';
+
 import type { FighterPanelProps } from '@/types/ui';
 
 export function FighterPanel({

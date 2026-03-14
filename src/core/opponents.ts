@@ -1,5 +1,6 @@
-import { archetypes, rivalPool, getRandomColor } from '../data/characters';
 import { randomInt, shuffle } from './utils';
+import { archetypes, getRandomColor,rivalPool } from '../data/characters';
+
 import type { Fighter, FighterArchetypes } from '@/types/fighter';
 
 const rivalArchetypes: Array<FighterArchetypes> = [

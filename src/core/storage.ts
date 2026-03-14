@@ -1,4 +1,5 @@
 import { getRandomColor } from '../data/characters';
+
 import type { Fighter } from '@/types/fighter';
 
 const SAVE_KEY = 'rooster-clash:player-roster';

@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react';
-import { generateOpponents } from './core/opponents';
+
+import { BattleArena } from './components/BattleArena.jsx';
+import { ColorEditorModal } from './components/ColorEditorModal.jsx';
+import { MenuScreen } from './components/MenuScreen.jsx';
+import { SelectionScreen } from './components/SelectionScreen.jsx';
 import { applyVictoryRewards, runLocalCombat } from './core/combat';
+import { generateOpponents } from './core/opponents';
 import {
   clearRoster,
   hasSavedRoster,
@@ -8,17 +13,13 @@ import {
   saveRoster,
 } from './core/storage';
 import { cloneRoster, starterRoster } from './data/characters';
-import { BattleArena } from './components/BattleArena.jsx';
-import { MenuScreen } from './components/MenuScreen.jsx';
-import { SelectionScreen } from './components/SelectionScreen.jsx';
-import { ColorEditorModal } from './components/ColorEditorModal.jsx';
-import { Fighter } from './types/fighter.js';
-import { Entity } from './types/core.js';
 import {
   BattleLogEntry,
   BattleLogEntryType,
   BattleState,
 } from './types/battle.js';
+import { Entity } from './types/core.js';
+import { Fighter } from './types/fighter.js';
 
 function getInitialRoster() {
   const saved = loadRoster();
@@ -144,15 +145,18 @@ export default function App() {
             : (type as BattleLogEntryType),
         );
       },
-      onUpdate(payload: any) {
-        setBattleState((current: any) => ({
-          ...(current ?? {}),
-          left: payload.left,
-          right: payload.right,
-          images: payload.images,
-          effect: payload.effect,
-          modeText: 'Local Mode',
-        }));
+      onUpdate(payload: Partial<BattleState>) {
+        setBattleState((current) => {
+          if (!current) return current;
+          return {
+            ...current,
+            left: payload.left ?? current.left,
+            right: payload.right ?? current.right,
+            images: payload.images ?? current.images,
+            effect: payload.effect !== undefined ? payload.effect : current.effect,
+            modeText: 'Local Mode',
+          };
+        });
       },
     });
 
@@ -222,7 +226,7 @@ export default function App() {
           onRefreshOpponents={() => setOpponents(generateOpponents())}
           onSelectPlayer={setSelectedPlayerId}
           onSelectOpponent={setSelectedOpponentId}
-          onStartBattle={handleStartBattle}
+          onStartBattle={() => { void handleStartBattle(); }}
           canStartBattle={canStartBattle}
           onOpenColorEditor={setColorEditorFighterId}
         />

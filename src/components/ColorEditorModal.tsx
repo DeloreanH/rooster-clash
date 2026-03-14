@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+
 import { VisualGallo } from './VisualGallo';
 import { diccionarioColores } from '../data/characters';
+
 import type { ColorEditorModalProps } from '@/types/ui';
 
 export function ColorEditorModal({
@@ -33,17 +35,17 @@ export function ColorEditorModal({
         </div>
         <div className='modal-body'>
           <div className='color-list'>
-            {diccionarioColores.map((c: any) => (
+            {diccionarioColores.map((c) => (
               <div
-                key={c.hex}
-                className={`color-item ${c.hex === tempColor ? 'selected' : ''}`}
-                onClick={() => setTempColor(c.hex)}
+                key={c.color}
+                className={`color-item ${c.color === tempColor ? 'selected' : ''}`}
+                onClick={() => setTempColor(c.color)}
               >
                 <div
                   className='color-preview-dot'
-                  style={{ backgroundColor: c.hex }}
+                  style={{ backgroundColor: c.color }}
                 ></div>
-                <span className='color-name'>{c.nombre}</span>
+                <span className='color-name'>{c.name}</span>
               </div>
             ))}
           </div>
