@@ -178,8 +178,8 @@ input {
 }
 
 .selection-layout {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
@@ -188,9 +188,13 @@ input {
 }
 
 .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
     gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 12px;
 }
 
 .fighter-option {
@@ -200,6 +204,8 @@ input {
     padding: 16px;
     cursor: pointer;
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    flex: 0 0 auto;
+    min-width: 240px;
 }
 
 .fighter-option:hover {
@@ -216,9 +222,84 @@ input {
     box-shadow: 0 0 0 3px rgba(180, 60, 47, 0.08);
 }
 
-.fighter-option h4,
-.fighter-option p {
-    margin: 0 0 8px;
+.fighter-option--redesigned {
+    background: var(--surface-strong);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+}
+
+.fighter-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.fighter-title {
+    color: var(--brand-strong);
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.fighter-edit-actions {
+    display: flex;
+    gap: 6px;
+    font-size: 1.1rem;
+}
+
+.fighter-edit-actions span {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.fighter-edit-actions span:hover {
+    transform: scale(1.15);
+}
+
+.color-gallo-badge--centered {
+    margin: 0 0 16px 0;
+    width: 24px;
+    height: 24px;
+}
+
+.fighter-level-pill {
+    background: #ffcc00;
+    color: #333;
+    font-weight: bold;
+    padding: 4px 16px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+}
+
+.fighter-stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+}
+
+.fighter-stats-list p {
+    margin: 0;
+}
+
+.stat-divider {
+    width: 100%;
+    border: none;
+    border-top: 2px dashed rgba(0, 0, 0, 0.15);
+    margin: 16px 0;
+}
+
+.fighter-xp-row {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 1.1rem;
 }
 
 .fighter-meta {
@@ -303,8 +384,8 @@ input {
 }
 
 .battle-log {
-    min-height: 280px;
-    max-height: 420px;
+    min-height: 160px;
+    max-height: 180px;
     overflow: auto;
     padding-right: 8px;
 }
@@ -320,7 +401,26 @@ input {
     font-weight: bold;
 }
 
+.log-entry--turn {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--brand-strong);
+    margin-top: 10px;
+    border-bottom: none;
+}
+
+.log-entry--winner {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin-top: 15px;
+    border-bottom: none;
+}
+
 @media (max-width: 900px) {
+
     .selection-layout,
     .arena {
         grid-template-columns: 1fr;
@@ -334,4 +434,250 @@ input {
     .hero-panel {
         padding: 28px;
     }
+}
+
+/* ---- ESTILOS MIGRADOS SANTI (COLOR, MODAL, SVG) ---- */
+.button--danger {
+    background: var(--danger);
+    color: #fff;
+}
+
+.button--danger:hover:not(:disabled) {
+    background: #8f2c20;
+}
+
+.visual-gallo-container {
+    width: 100%;
+    height: 160px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.visual-gallo-container svg,
+.img-combate {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.1s ease;
+}
+
+.flip-horizontal {
+    transform: scaleX(-1);
+}
+
+.color-gallo-badge {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    margin-top: 10px;
+}
+
+.btn-icon {
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-icon:hover {
+    transform: scale(1.2);
+}
+
+/* Modal Editor de Color */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--surface);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    width: 950px;
+    max-width: 95vw;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--brand-strong);
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--muted);
+    border: none;
+    background: none;
+}
+
+.close-btn:hover {
+    color: var(--danger);
+}
+
+.modal-body {
+    display: flex;
+    gap: 20px;
+}
+
+.color-list {
+    flex: 1;
+    max-height: 350px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-right: 10px;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface-strong);
+}
+
+.color-item:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.color-item.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(31, 122, 107, 0.2);
+}
+
+.color-preview-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.color-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text);
+}
+
+.preview-panel {
+    flex: 1;
+    background: var(--surface-strong);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.preview-svg-container {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--border);
+    padding-top: 15px;
+}
+
+/* --- Animaciones de Combate --- */
+.escudo-animacion {
+    position: absolute;
+    width: 100px;
+    height: auto;
+    top: 110px;
+    z-index: 20;
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.escudo-player {
+    right: -15px;
+}
+
+.escudo-opponent {
+    left: -15px;
+}
+
+.garras-animacion {
+    position: absolute;
+    width: 130px;
+    height: auto;
+    top: 80px;
+    left: calc(50% - 65px);
+    z-index: 25;
+    pointer-events: none;
+}
+
+.zarpazo-animado {
+    animation: zarpazo 0.25s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes zarpazo {
+    0% {
+        transform: scale(0) rotate(20deg);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+/* Esquivar Animacion (Zig Zag) */
+.esquivar-animado {
+    animation: esquivar 0.4s ease-in-out forwards;
+}
+
+@keyframes esquivar {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-15px) rotate(-8deg); }
+    50%  { transform: translateX(15px) rotate(8deg); }
+    75%  { transform: translateX(-8px) rotate(-4deg); }
+    100% { transform: translateX(0) rotate(0deg); }
 }
