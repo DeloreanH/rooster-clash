@@ -22,7 +22,7 @@ export function SelectionScreen({
           Back
         </button>
         <div style={{ flex: 1, textAlign: 'center' }}>
-          <p className='eyebrow' style={{ margin: 0, fontSize: '0.9rem' }}>
+          <p className='eyebrow' style={{ margin: 0, fontSize: '2rem' }}>
             MODULAR ROSTER MANAGEMENT
           </p>
         </div>

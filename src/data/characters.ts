@@ -2,21 +2,21 @@ import { Color, Name } from '@/types/core';
 import type { Fighter, FighterArchetypes, FighterStats } from '@/types/fighter';
 
 export const diccionarioColores: (Color & Name)[] = [
-  { color: '#FFCB05', name: 'Amarillo Eléctrico' },
-  { color: '#3466AF', name: 'Azul Rey' },
-  { color: '#6890F0', name: 'Azul Celeste' },
-  { color: '#FF0000', name: 'Rojo Fuego' },
-  { color: '#CC0000', name: 'Carmesí' },
-  { color: '#78C850', name: 'Verde Hoja' },
-  { color: '#49896F', name: 'Verde Bosque' },
-  { color: '#C5915D', name: 'Marrón Claro' },
-  { color: '#8B4513', name: 'Marrón Óxido' },
-  { color: '#A040A0', name: 'Púrpura Veneno' },
-  { color: '#7C6EBB', name: 'Morado Fantasma' },
-  { color: '#F85888', name: 'Rosa Hada' },
-  { color: '#FFB6C1', name: 'Rosa Claro' },
-  { color: '#A9A9A9', name: 'Gris Plata' },
-  { color: '#5B6370', name: 'Gris Acero' },
+  { color: '#FFCB05', name: 'Electric Yellow' },
+  { color: '#3466AF', name: 'Royal Blue' },
+  { color: '#6890F0', name: 'Sky Blue' },
+  { color: '#FF0000', name: 'Fire Red' },
+  { color: '#CC0000', name: 'Crimson' },
+  { color: '#78C850', name: 'Leaf Green' },
+  { color: '#49896F', name: 'Forest Green' },
+  { color: '#C5915D', name: 'Light Brown' },
+  { color: '#8B4513', name: 'Rust Brown' },
+  { color: '#A040A0', name: 'Poison Purple' },
+  { color: '#7C6EBB', name: 'Phantom Purple' },
+  { color: '#F85888', name: 'Fairy Pink' },
+  { color: '#FFB6C1', name: 'Light Pink' },
+  { color: '#A9A9A9', name: 'Silver Grey' },
+  { color: '#5B6370', name: 'Steel Grey' },
 ];
 
 export function getRandomColor(): string {
@@ -102,32 +102,32 @@ function createFighter({
 export const starterRoster: Fighter[] = [
   createFighter({
     id: 'golden-rooster',
-    name: 'Gallo de Oro',
+    name: 'Golden Rooster',
     rarity: 'common',
     archetype: 'balanced',
   }),
   createFighter({
     id: 'iron-beak',
-    name: 'Pico de Hierro',
+    name: 'Iron Beak',
     rarity: 'common',
     archetype: 'tank',
   }),
   createFighter({
     id: 'swift-shadow',
-    name: 'Sombra Fugaz',
+    name: 'Swift Shadow',
     rarity: 'rare',
     archetype: 'agile',
   }),
 ];
 
 export const rivalPool: string[] = [
-  'Fuero Negro',
-  'Pluma Roja',
-  'Espolón Letal',
-  'Ciclón',
-  'El Verdugo',
-  'Navaja Blindada',
-  'Cresta Rota',
+  'Black Fury',
+  'Red Feather',
+  'Lethal Spur',
+  'Cyclone',
+  'The Executioner',
+  'Armored Blade',
+  'Broken Crest',
 ];
 
 export function cloneRoster<T extends Fighter>(roster: T[]): T[] {
