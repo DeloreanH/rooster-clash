@@ -27,7 +27,6 @@ export default defineConfig({
     target: 'esnext',
     sourcemap: process.env.NODE_ENV === 'production' ? false : true,
     cssCodeSplit: true,
-    minify: 'esbuild',
     reportCompressedSize: true,
     chunkSizeWarningLimit: 500,
   },
