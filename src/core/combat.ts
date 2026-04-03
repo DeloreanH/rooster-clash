@@ -197,6 +197,19 @@ export async function runLocalCombat({
     }
   }
 
+  if (checkSurrender && checkSurrender()) {
+    left.hp = 0;
+    onUpdate({
+      left,
+      images: {
+        player: battleImages.player.ko,
+        opponent:
+          right.hp <= 0 ? battleImages.opponent.ko : battleImages.opponent.idle,
+      },
+      effect: null,
+    });
+  }
+
   const winner = left.hp > 0 ? left : right.hp > 0 ? right : null;
   return { winner, player: left, opponent: right };
 }
