@@ -6,12 +6,7 @@ import { MenuScreen } from './components/MenuScreen.jsx';
 import { SelectionScreen } from './components/SelectionScreen.jsx';
 import { applyVictoryRewards, runLocalCombat } from './core/combat';
 import { generateOpponents } from './core/opponents';
-import {
-  clearRoster,
-  hasSavedRoster,
-  loadRoster,
-  saveRoster,
-} from './core/storage';
+import { clearGame, hasSavedGame, loadGame, saveGame } from './core/storage';
 import { cloneRoster, starterRoster } from './data/characters';
 import {
   BattleLogEntry,
@@ -21,15 +16,26 @@ import {
 import { Entity } from './types/core.js';
 import { Fighter } from './types/fighter.js';
 
-function getInitialRoster() {
-  const saved = loadRoster();
-  return saved ?? cloneRoster(starterRoster);
+function getInitialGameState() {
+  const saved = loadGame();
+  if (saved) return saved;
+  return {
+    roster: cloneRoster(starterRoster),
+    opponents: generateOpponents(),
+  };
 }
 
 export default function App() {
   const [screen, setScreen] = useState('menu');
-  const [rooster, setRooster] = useState<Fighter[]>(getInitialRoster);
-  const [opponents, setOpponents] = useState<Fighter[]>([]);
+  const [rooster, setRooster] = useState<Fighter[]>(
+    () => getInitialGameState().roster,
+  );
+  const [opponents, setOpponents] = useState<Fighter[]>(
+    () => getInitialGameState().opponents || generateOpponents(),
+  );
+  const [lastRefreshDate, setLastRefreshDate] = useState<string | undefined>(
+    () => getInitialGameState().lastRefreshDate,
+  );
   const [selectedPlayerId, setSelectedPlayerId] = useState<Entity['id'] | null>(
     null,
   );
@@ -39,7 +45,7 @@ export default function App() {
   const [battleState, setBattleState] = useState<BattleState | null>(null);
   const [battleLog, setBattleLog] = useState<BattleLogEntry[]>([]);
   const [statusText, setStatusText] = useState(
-    hasSavedRoster() ? 'Saved progress available' : 'No progress available',
+    hasSavedGame() ? 'Saved progress available' : 'No progress available',
   );
 
   // Modal State
@@ -61,30 +67,46 @@ export default function App() {
   function openMenu() {
     setScreen('menu');
     setStatusText(
-      hasSavedRoster() ? 'Saved progress available' : 'No progress available',
+      hasSavedGame() ? 'Saved progress available' : 'No progress available',
     );
   }
 
-  function openSelection(nextRoster = rooster) {
+  function openSelection(
+    nextRoster = rooster,
+    nextOpponents = opponents,
+    nextRefreshDate = lastRefreshDate,
+  ) {
     setRooster(nextRoster);
-    setOpponents(generateOpponents());
+    setOpponents(
+      nextOpponents.length > 0 ? nextOpponents : generateOpponents(),
+    );
+    setLastRefreshDate(nextRefreshDate);
     setSelectedPlayerId(null);
     setSelectedOpponentId(null);
     setScreen('selection');
     setStatusText(
-      hasSavedRoster() ? 'Saved progress available' : 'No progress available',
+      hasSavedGame() ? 'Saved progress available' : 'No progress available',
     );
   }
 
   function handleNewGame() {
-    clearRoster();
+    clearGame();
     const freshRoster = cloneRoster(starterRoster);
-    openSelection(freshRoster);
+    const freshOpponents = generateOpponents();
+    openSelection(freshRoster, freshOpponents, undefined);
   }
 
   function handleContinue() {
-    const saved = loadRoster();
-    openSelection(saved ?? cloneRoster(starterRoster));
+    const saved = loadGame();
+    if (saved) {
+      openSelection(
+        saved.roster,
+        saved.opponents || generateOpponents(),
+        saved.lastRefreshDate,
+      );
+    } else {
+      openSelection(cloneRoster(starterRoster), generateOpponents(), undefined);
+    }
   }
 
   function appendLog(message: string, type: BattleLogEntryType = 'default') {
@@ -97,13 +119,29 @@ export default function App() {
     setBattleLog((current) => [...current, entry]);
   }
 
+  function handleRefreshOpponents() {
+    const today = new Date().toISOString().split('T')[0];
+    if (lastRefreshDate === today) {
+      alert('You can only refresh rivals once per day.');
+      return;
+    }
+    const newOpponents = generateOpponents();
+    setOpponents(newOpponents);
+    setLastRefreshDate(today);
+    saveGame({
+      roster: rooster,
+      opponents: newOpponents,
+      lastRefreshDate: today,
+    });
+  }
+
   // Lógica para guardar color modificado
   function handleSaveColor(fighterId: string, newColorHex: string) {
     const updatedRoster = rooster.map((f) =>
       f.id === fighterId ? { ...f, color: newColorHex } : f,
     );
     setRooster(updatedRoster);
-    saveRoster(updatedRoster);
+    saveGame({ roster: updatedRoster, opponents, lastRefreshDate });
     setColorEditorFighterId(null);
   }
 
@@ -120,12 +158,12 @@ export default function App() {
       left: {
         ...selectedPlayer,
         hp: selectedPlayer.hp,
-        maxHp: selectedPlayer.hp,
+        maxHp: selectedPlayer.maxHp,
       },
       right: {
         ...selectedOpponent,
         hp: selectedOpponent.hp,
-        maxHp: selectedOpponent.hp,
+        maxHp: selectedOpponent.maxHp,
       },
       images: { player: 'defensa', opponent: 'defensa' },
       effect: null,
@@ -163,18 +201,34 @@ export default function App() {
 
     setIsBattleFinished(true);
 
+    const updatedRoster = structuredClone(rooster);
+
+    // Recovery for non-selected roosters
+    updatedRoster.forEach((f) => {
+      if (f.id !== selectedPlayer.id) {
+        f.hp = Math.min(f.maxHp, Math.ceil(f.hp + f.maxHp * 0.2));
+      }
+    });
+
+    const activePlayerRoster = updatedRoster.find(
+      (f) => f.id === selectedPlayer.id,
+    );
+    if (activePlayerRoster) {
+      // if surrendered or KO'd, HP is 0
+      activePlayerRoster.hp = surrenderedRef.current
+        ? 0
+        : Math.max(0, result.player.hp);
+    }
+
     if (surrenderedRef.current) {
       appendLog('You have surrendered. Combat abandoned.', 'system');
     } else if (result.winner && result.winner.id === selectedPlayer.id) {
-      const updatedRoster = structuredClone(rooster);
       const rewards = applyVictoryRewards(
         updatedRoster,
         selectedPlayer.id,
         selectedOpponent,
       );
       if (rewards) {
-        setRooster(updatedRoster);
-        saveRoster(updatedRoster);
         appendLog(`${result.winner.name} WINS the battle!`, 'winner');
         appendLog(
           `XP gained: ${rewards.gainedExp}. Modifier: ${rewards.modifier}.`,
@@ -185,16 +239,23 @@ export default function App() {
             'system',
           );
         }
-        setStatusText('Progress saved');
       }
     } else if (result.winner) {
-      saveRoster(rooster);
       appendLog(`${result.winner.name} WINS the battle!`, 'winner');
       appendLog('Your rooster has been defeated. You gain no experience.');
-      setStatusText('Progress saved');
     } else {
       appendLog('Double KO. There is no winner this round.', 'system');
     }
+
+    const newOpponents = generateOpponents();
+    setRooster(updatedRoster);
+    setOpponents(newOpponents);
+    saveGame({
+      roster: updatedRoster,
+      opponents: newOpponents,
+      lastRefreshDate,
+    });
+    setStatusText('Progress saved');
   }
 
   function handleSurrender() {
@@ -213,7 +274,7 @@ export default function App() {
         <MenuScreen
           onNewGame={handleNewGame}
           onContinue={handleContinue}
-          canContinue={hasSavedRoster()}
+          canContinue={hasSavedGame()}
           saveStatus={statusText}
         />
       )}
@@ -224,7 +285,7 @@ export default function App() {
           selectedPlayerId={selectedPlayerId}
           selectedOpponentId={selectedOpponentId}
           onBack={openMenu}
-          onRefreshOpponents={() => setOpponents(generateOpponents())}
+          onRefreshOpponents={handleRefreshOpponents}
           onSelectPlayer={setSelectedPlayerId}
           onSelectOpponent={setSelectedOpponentId}
           onStartBattle={() => {
@@ -232,6 +293,9 @@ export default function App() {
           }}
           canStartBattle={canStartBattle}
           onOpenColorEditor={setColorEditorFighterId}
+          hasRefreshedToday={
+            lastRefreshDate === new Date().toISOString().split('T')[0]
+          }
         />
       )}
       {screen === 'battle' && battleState && (

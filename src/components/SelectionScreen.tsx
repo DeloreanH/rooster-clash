@@ -14,6 +14,7 @@ export function SelectionScreen({
   onStartBattle,
   canStartBattle,
   onOpenColorEditor,
+  hasRefreshedToday,
 }: SelectionScreenProps) {
   return (
     <section className='screen screen--active'>
@@ -75,15 +76,25 @@ export function SelectionScreen({
               <p className='eyebrow'>Step 2</p>
               <h3>Select an Opponent</h3>
             </div>
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button
                 type='button'
                 className='button button--ghost'
                 style={{ padding: '6px 12px', fontSize: '0.9rem' }}
                 onClick={onRefreshOpponents}
+                disabled={hasRefreshedToday}
               >
                 Refresh
               </button>
+              <span
+                style={{
+                  fontSize: '0.9rem',
+                  color: 'var(--muted)',
+                  fontWeight: 'bold',
+                }}
+              >
+                {hasRefreshedToday ? '0/1' : '1/1'}
+              </span>
             </div>
           </div>
           <div className='card-grid'>

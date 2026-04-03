@@ -10,7 +10,7 @@ const battleImages = {
 } as const;
 
 export function createCombatant(fighter: Fighter): Combatant {
-  return { ...structuredClone(fighter), hp: fighter.hp, maxHp: fighter.hp };
+  return { ...structuredClone(fighter), hp: fighter.hp, maxHp: fighter.maxHp };
 }
 
 export function rollDice(): number {
