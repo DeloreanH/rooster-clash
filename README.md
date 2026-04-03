@@ -1,4 +1,4 @@
-# Rooster Clash
+# Rooster Clash IDLE fork
 
 A 1v1 rooster fighting game — frontend prototype built with **React 19**, **Vite 8**, and **TypeScript**.
 
